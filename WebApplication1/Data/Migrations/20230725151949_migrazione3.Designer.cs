@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,11 @@ using WebApplication1.Data;
 namespace WebApplication1.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230725151949_migrazione3")]
+    partial class migrazione3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -167,10 +170,12 @@ namespace WebApplication1.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -207,10 +212,12 @@ namespace WebApplication1.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -220,7 +227,7 @@ namespace WebApplication1.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.CartDetail", b =>
+            modelBuilder.Entity("WebApplication1.Models.CartItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,25 +235,22 @@ namespace WebApplication1.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
                     b.Property<int>("ShoppingCartId")
                         .HasColumnType("int");
 
-                    b.Property<int>("VideogameId")
+                    b.Property<int>("VideoGameId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ShoppingCartId");
 
-                    b.HasIndex("VideogameId");
+                    b.HasIndex("VideoGameId");
 
-                    b.ToTable("CartDetail");
+                    b.ToTable("CartItems");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Genre", b =>
+            modelBuilder.Entity("WebApplication1.Models.Purchase", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -254,31 +258,14 @@ namespace WebApplication1.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("GenreName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Genres");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Order", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("CartItemId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("OrderStatusId")
-                        .HasColumnType("int");
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -286,59 +273,9 @@ namespace WebApplication1.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderStatusId");
+                    b.HasIndex("CartItemId");
 
-                    b.ToTable("Order");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.OrderDetail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<double>("UnitPrice")
-                        .HasColumnType("float");
-
-                    b.Property<int>("VideogameId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("VideogameId");
-
-                    b.ToTable("OrderDetail");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.OrderStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("StatusId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OrderStatus");
+                    b.ToTable("Purchases");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.ShoppingCart", b =>
@@ -351,17 +288,16 @@ namespace WebApplication1.Data.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShoppingCart");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ShoppingCarts");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Videogame", b =>
+            modelBuilder.Entity("WebApplication1.Models.VideoGame", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -374,31 +310,21 @@ namespace WebApplication1.Data.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Developer")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GenreId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GenreId");
-
-                    b.ToTable("Videogame");
+                    b.ToTable("VideoGames");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -452,81 +378,55 @@ namespace WebApplication1.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.CartDetail", b =>
+            modelBuilder.Entity("WebApplication1.Models.CartItem", b =>
                 {
                     b.HasOne("WebApplication1.Models.ShoppingCart", "ShoppingCart")
-                        .WithMany()
+                        .WithMany("CartItems")
                         .HasForeignKey("ShoppingCartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Videogame", "Videogame")
-                        .WithMany("CartDetail")
-                        .HasForeignKey("VideogameId")
+                    b.HasOne("WebApplication1.Models.VideoGame", "VideoGame")
+                        .WithMany()
+                        .HasForeignKey("VideoGameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ShoppingCart");
 
-                    b.Navigation("Videogame");
+                    b.Navigation("VideoGame");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Order", b =>
+            modelBuilder.Entity("WebApplication1.Models.Purchase", b =>
                 {
-                    b.HasOne("WebApplication1.Models.OrderStatus", "OrderStatus")
+                    b.HasOne("WebApplication1.Models.CartItem", "CartItem")
+                        .WithMany("Purchase")
+                        .HasForeignKey("CartItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CartItem");
+                });
+
+            modelBuilder.Entity("WebApplication1.Models.ShoppingCart", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
-                        .HasForeignKey("OrderStatusId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("OrderStatus");
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.OrderDetail", b =>
+            modelBuilder.Entity("WebApplication1.Models.CartItem", b =>
                 {
-                    b.HasOne("WebApplication1.Models.Order", "Order")
-                        .WithMany("OrderDetail")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Models.Videogame", "Videogame")
-                        .WithMany("OrderDetail")
-                        .HasForeignKey("VideogameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Videogame");
+                    b.Navigation("Purchase");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Videogame", b =>
+            modelBuilder.Entity("WebApplication1.Models.ShoppingCart", b =>
                 {
-                    b.HasOne("WebApplication1.Models.Genre", "Genre")
-                        .WithMany("Videogames")
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Genre");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Genre", b =>
-                {
-                    b.Navigation("Videogames");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Order", b =>
-                {
-                    b.Navigation("OrderDetail");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Videogame", b =>
-                {
-                    b.Navigation("CartDetail");
-
-                    b.Navigation("OrderDetail");
+                    b.Navigation("CartItems");
                 });
 #pragma warning restore 612, 618
         }

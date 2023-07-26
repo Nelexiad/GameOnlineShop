@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication1.Data;
 
@@ -11,9 +12,11 @@ using WebApplication1.Data;
 namespace WebApplication1.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230726113632_new-param-dev")]
+    partial class newparamdev
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,23 +249,6 @@ namespace WebApplication1.Data.Migrations
                     b.ToTable("CartDetail");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Genre", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("GenreName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Genres");
-                });
-
             modelBuilder.Entity("WebApplication1.Models.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -374,16 +360,14 @@ namespace WebApplication1.Data.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<string>("Developer")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GenreId")
-                        .HasColumnType("int");
+                    b.Property<string>("Developer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Price")
+                        .HasMaxLength(255)
                         .HasColumnType("float");
 
                     b.Property<DateTime>("ReleaseDate")
@@ -395,8 +379,6 @@ namespace WebApplication1.Data.Migrations
                         .HasColumnType("nvarchar(40)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GenreId");
 
                     b.ToTable("Videogame");
                 });
@@ -499,22 +481,6 @@ namespace WebApplication1.Data.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Videogame");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Videogame", b =>
-                {
-                    b.HasOne("WebApplication1.Models.Genre", "Genre")
-                        .WithMany("Videogames")
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Genre");
-                });
-
-            modelBuilder.Entity("WebApplication1.Models.Genre", b =>
-                {
-                    b.Navigation("Videogames");
                 });
 
             modelBuilder.Entity("WebApplication1.Models.Order", b =>

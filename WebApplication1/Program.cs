@@ -1,6 +1,7 @@
 using Game_ECommerce.Areas.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WebApplication1;
 using WebApplication1.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,14 +10,25 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services
+   
+    .AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddLogging();
+builder.Services
+    .AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddUserManager<CustomUserManager>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultUI()
+    .AddDefaultTokenProviders();
 
+builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<IRepository<Videogame>, VideogameRepository>();
 var app = builder.Build();
+
+//using(var scope = app.Services.CreateScope())
+//{
+//   await DbSeeder.SeedDafaultData(scope.ServiceProvider);
+//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
