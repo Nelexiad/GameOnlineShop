@@ -7,17 +7,23 @@ namespace WebApplication1.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IRepository<Videogame> _videogameRepository;
+        private readonly BaseRepositories<Videogame> _videogameRepository;
 
-        public HomeController(ILogger<HomeController> logger, IRepository<Videogame> videogameRepository)
+        public HomeController(ILogger<HomeController> logger, BaseRepositories<Videogame> videogameRepository)
         {
             _logger = logger;
             _videogameRepository = videogameRepository;
         }
 
-        public async Task<IActionResult> Index(int id)
+        public IActionResult Index(int id)
         {
-            Videogame videogame= await _videogameRepository.Get(id);
+            
+            return View();
+        }
+
+        public async Task<IActionResult> GetVideogames(int id)
+        {
+            Videogame videogame = await _videogameRepository.Get(id);
             return View(videogame);
         }
 

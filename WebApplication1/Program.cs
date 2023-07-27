@@ -4,15 +4,18 @@ using Microsoft.EntityFrameworkCore;
 using WebApplication1;
 using WebApplication1.Data;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
-builder.Services
-   
-    .AddDatabaseDeveloperPageExceptionFilter();
+//builder.Services.AddDbContextFactory<ApplicationDbContext>();
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddScoped<IDbContext<ApplicationDbContext>, ApplicationDbContext>();
 builder.Services.AddLogging();
 builder.Services
     .AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -22,7 +25,9 @@ builder.Services
     .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IRepository<Videogame>, VideogameRepository>();
+builder.Services.AddScoped<BaseRepositories<Videogame>, VideogameRepository>();
+
+
 var app = builder.Build();
 
 //using(var scope = app.Services.CreateScope())
