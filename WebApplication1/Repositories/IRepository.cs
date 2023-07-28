@@ -1,13 +1,13 @@
 ﻿namespace WebApplication1
 {
-    public interface IRepository<T>
+    public interface IRepository<TDTO>
     {
-        Task<T> Get(int id);
+        Task<TDTO> Get(int id);
 
-        Task<IEnumerable<T>> GetAll();
+        Task<IEnumerable<TDTO>> GetAll();
 
-        Task<T> Create(T entity);
-        Task<T> Update(int id, T entity);
+        Task<TDTO> Create(TDTO entity);
+        Task<TDTO> Update(int id, TDTO entity);
         Task<bool> Delete(int id);
     }
 }

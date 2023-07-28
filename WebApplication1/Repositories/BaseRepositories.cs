@@ -1,22 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using WebApplication1.Models.MappedModel;
 
 namespace WebApplication1.Repositories
 {
-    public abstract class BaseRepositories<T> : IRepository<T> where T : class
+    public abstract class BaseRepositories<TMODEL,TDTO> : IRepository<TDTO> where TMODEL:class  where TDTO : class
     {
         private readonly  IDbContext<ApplicationDbContext> _dbContext;
-        private readonly ILogger<T> _logger;
+        private readonly ILogger<TDTO> _logger;
+        private readonly IMapper _mapper;
 
-        public BaseRepositories(IDbContext<ApplicationDbContext> db, ILogger<T> logger)
+        public BaseRepositories(IDbContext<ApplicationDbContext> db, ILogger<TDTO> logger,IMapper mapper)
         {
             _dbContext = db;
             _logger = logger;
+            _mapper = mapper;
         }
-        public virtual async Task<T> Create(T entity)
+        public virtual async Task<TDTO> Create(TDTO entity)
         {
             try
             {
-                 _dbContext.Set<T>().Add(entity);
+                var entityDTO = _mapper.Map<TDTO,TMODEL>(entity);
+                _dbContext.Set<TMODEL>().Add(entityDTO);
                 await _dbContext.SaveChangesAsync();
                 return entity;
             }
@@ -31,14 +36,15 @@ namespace WebApplication1.Repositories
         {
             try
             {
-                var entity = await _dbContext.Set<T>().FindAsync(id);
+                var entity = await _dbContext.Set<TMODEL>().FindAsync(id); // Recupera il modello di dominio dal database
                 if (entity == null)
                 {
                     throw new Exception($"Element with ID: {id} not found");
                 }
 
-                _dbContext.Set<T>().Remove(entity);
-                await _dbContext.SaveChangesAsync();
+                var dto = _mapper.Map<TMODEL, TDTO>(entity); // Mappa il modello di dominio al DTO
+                _dbContext.Set<TMODEL>().Remove(entity); // Rimuove il modello di dominio dal contesto
+                await _dbContext.SaveChangesAsync(); // Effettua la cancellazione nel database
                 return true;
             }
             catch (Exception ex)
@@ -48,19 +54,18 @@ namespace WebApplication1.Repositories
             }
         }
 
-        public virtual async Task<T> Get(int id)
+        public virtual async Task<TDTO> Get(int id)
         {
             try
             {
-
-                var entity = await _dbContext.Set<T>().FindAsync(id);
-                if (entity == null)
+                var entityDTO = await _dbContext.Set<TMODEL>().FindAsync(id);
+                if (entityDTO == null)
                 {
                     throw new Exception($"nessun elemento con l'ID {id}");
                 }
+                var entity = _mapper.Map<TMODEL,TDTO>(entityDTO);
                 return entity;
             }
-
             catch (Exception ex)
             {
                 _logger.LogError(ex, "");
@@ -68,12 +73,13 @@ namespace WebApplication1.Repositories
             }
         }
 
-        public virtual async Task<IEnumerable<T>> GetAll()
+        public virtual async Task<IEnumerable<TDTO>> GetAll()
         {
             try
             {
-                IEnumerable<T> entities = await _dbContext.Set<T>().ToListAsync();
-                return entities;
+                var entities = await _dbContext.Set<TMODEL>().ToListAsync(); // Recupera i modelli di dominio dal database
+                var dtos = _mapper.Map<IEnumerable<TMODEL>, IEnumerable<TDTO>>(entities); // Mappa i modelli di dominio ai DTO
+                return dtos;
             }
             catch (Exception ex)
             {
@@ -82,22 +88,22 @@ namespace WebApplication1.Repositories
             }
         }
 
-        public virtual async Task<T> Update(int id, T entity)
+        public virtual async Task<TDTO> Update(int id, TDTO entity)
         {
             try
             {
-                var existingEntity = await _dbContext.Set<T>().FindAsync(id);
+                var existingEntity = await _dbContext.Set<TMODEL>().FindAsync(id);
+              
                 if (existingEntity == null)
                 {
                     throw new Exception($"Element with ID {id} not found.");
                 }
 
-                // Utilizza il metodo Entry per ottenere l'entità collegata all'oggetto di tracciamento.
-                // Poi copia le proprietà da "entity" a "existingEntity".
-                _dbContext.Set<T>().Entry(existingEntity).CurrentValues.SetValues(entity);
+                var entityDTO = _mapper.Map<TDTO,TMODEL>(entity);
+                _dbContext.Set<TMODEL>().Entry(existingEntity).CurrentValues.SetValues(entityDTO);
 
                 await _dbContext.SaveChangesAsync();
-                return existingEntity;
+                return entity;
             }
             catch (Exception ex)
             {

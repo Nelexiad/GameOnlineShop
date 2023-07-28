@@ -1,10 +1,11 @@
+using AutoMapper;
 using Game_ECommerce.Areas.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1;
 using WebApplication1.Controllers;
 using WebApplication1.Data;
-
+using WebApplication1.Models.MappedModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 //builder.Services.AddDbContextFactory<ApplicationDbContext>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IDbContext<ApplicationDbContext>, ApplicationDbContext>();
 builder.Services.AddLogging();
 builder.Services
@@ -26,7 +28,7 @@ builder.Services
     .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<BaseRepositories<Videogame>, VideogameRepository>();
+builder.Services.AddScoped<BaseRepositories<Videogame,VideogameDTO>, VideogameRepository>();
 builder.Services.AddScoped<VideogameRepository>();
 
 
