@@ -2,6 +2,7 @@ using Game_ECommerce.Areas.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1;
+using WebApplication1.Controllers;
 using WebApplication1.Data;
 
 
@@ -26,6 +27,8 @@ builder.Services
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<BaseRepositories<Videogame>, VideogameRepository>();
+builder.Services.AddScoped<VideogameRepository>();
+
 
 
 var app = builder.Build();

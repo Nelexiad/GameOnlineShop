@@ -12,20 +12,24 @@ namespace WebApplication1.Controllers
 {
     public class VideogamesController :  Controller
     {
-        private readonly VideogameRepository _repository;
+        private VideogameRepository _repository;
 
         public VideogamesController(VideogameRepository repo)
         {
             _repository = repo;
+           
+           
+
         }
 
+        
 
 
         // GET: Videogames
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = await _repository.GetAll();
-            return View(applicationDbContext);
+            var videogames = await _repository.GetAll();
+            return View(videogames);
         }
 
         
