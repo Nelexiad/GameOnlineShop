@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using WebApplication1.Models;
-
+using WebApplication1.Models.DTO;
 using WebApplication1.Models.MappedModel;
 
 namespace WebApplication1.MappingProfiles
@@ -11,6 +11,8 @@ namespace WebApplication1.MappingProfiles
         {
             CreateMap<Videogame, VideogameDTO>();
             CreateMap<VideogameDTO, Videogame>();
+            CreateMap<Genre, GenreDTO>();
+            CreateMap<GenreDTO, Genre>();
             
 
         }

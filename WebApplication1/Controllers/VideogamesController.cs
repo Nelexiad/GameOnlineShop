@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.Models;
+using WebApplication1.Models.DTO;
+using WebApplication1.Models.MappedModel;
 
 namespace WebApplication1.Controllers
 {
@@ -32,6 +34,26 @@ namespace WebApplication1.Controllers
             return View(videogames);
         }
 
+        public async Task<IActionResult> Create()
+        {
+            var genres = new List<GenreDTO>
+    {
+        new GenreDTO { Id = 1, GenreName = "Action" },
+        new GenreDTO { Id = 2, GenreName = "Fps" },
+        new GenreDTO { Id = 3, GenreName = "Horror" },
+        // Altri generi...
+    };
+
+            ViewBag.Genres = new SelectList(genres, "Id", "GenreName");
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(VideogameDTO videogame)
+        {
+           await  _repository.Create(videogame);
+            return View();
+        }
         
     }
 }
