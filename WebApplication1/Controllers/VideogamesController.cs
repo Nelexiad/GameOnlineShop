@@ -52,7 +52,8 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(VideogameDTO videogame)
         {
-            await _repository.Create(videogame);
+            string url = "https://localhost:7115/api/Videogames";
+            await _repository.Create(videogame,url);
             return View();
         }
 

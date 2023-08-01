@@ -11,6 +11,6 @@
         public double Price { get; set; }
         public string CoverVideogame { get; set; }
         public DateTime ReleaseDate { get; set; }
-        public string GenreName { get; set; }
+       
     }
 }

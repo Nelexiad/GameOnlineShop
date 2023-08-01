@@ -4,6 +4,10 @@ using Entities.Models.DTO;
 using Entities.Data;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
+using Azure;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+
 
 namespace Repositories.Repositories
 {
@@ -21,13 +25,30 @@ namespace Repositories.Repositories
             _mapper = mapper;
             _httpClient = httpClient;
         }
-        public virtual async Task<TDTO> Create(TDTO entity)
+        public virtual async Task<TDTO> Create(TDTO entity, string url)
         {
             try
             {
-                var dbEntity= await _httpClient.PostAsJsonAsync("",entity).Result.Content.ReadFromJsonAsync<TMODEL>();
+                var toSaveEntity = _mapper.Map<TMODEL>(entity);
+                var response = await _httpClient.PostAsJsonAsync(url, toSaveEntity);
+
+                // Assicurati che la richiesta HTTP sia stata completata con successo (200 OK)
+                response.EnsureSuccessStatusCode();
+
+                // Leggi il contenuto della risposta HTTP e deserializzalo nel tipo appropriato (TDTO)
+                var dbEntity = await response.Content.ReadFromJsonAsync<TDTO>();
+
+                return dbEntity;
+            }
+            catch (HttpRequestException ex)
+            {
+                // Gestisci l'eccezione e visualizza i dettagli dell'errore
+                _logger.LogError(ex, "Error occurred while sending the HTTP request.");
+                _logger.LogError("Request URL: " + url);
+                _logger.LogError("Request Body: " + JsonConvert.SerializeObject(entity));
+                _logger.LogError("Response Status Code: " + ex.StatusCode);
                 
-                return entity;
+                throw;
             }
             catch (Exception ex)
             {

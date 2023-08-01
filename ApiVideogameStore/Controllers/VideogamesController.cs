@@ -21,5 +21,31 @@ namespace ApiVideogameStore.Controllers
             var videogames = await _repository.GetAll();
             return Ok(videogames);
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var videogames = await _repository.Get(id);
+            return Ok(videogames);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Create(VideogameDTO videogameDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var createdVideogameDTO = await _repository.Create(videogameDTO);
+                return Ok(createdVideogameDTO);
+                //return CreatedAtAction(nameof(Get), null, createdVideogameDTO);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while creating the videogame.");
+                throw;
+            }
+        }
     }
 }

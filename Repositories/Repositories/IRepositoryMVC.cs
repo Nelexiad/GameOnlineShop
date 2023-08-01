@@ -13,7 +13,7 @@ namespace Repositories.Repositories
 
         Task<IEnumerable<TDTO>> GetAll(string url);
 
-        Task<TDTO> Create(TDTO entity);
+        Task<TDTO> Create(TDTO entity,string url);
         Task<TDTO> Update(int id, TDTO entity);
         Task<bool> Delete(int id);
     }
