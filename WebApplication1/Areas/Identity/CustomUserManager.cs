@@ -1,8 +1,9 @@
 ﻿
+using Entities;
+using Entities.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using WebApplication1.Data;
-using WebApplication1.Models;
+
 
 namespace Game_ECommerce.Areas.Identity
 {

@@ -2,35 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Entities.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Data;
-using WebApplication1.Models;
-using WebApplication1.Models.DTO;
-using WebApplication1.Models.MappedModel;
+using Repositories.Repositories;
+
 
 namespace WebApplication1.Controllers
 {
-    public class VideogamesController :  Controller
+    public class VideogamesController : Controller
     {
         private VideogameRepository _repository;
 
         public VideogamesController(VideogameRepository repo)
         {
             _repository = repo;
-           
-           
+
+
 
         }
 
-        
+
 
 
         // GET: Videogames
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var videogames = await _repository.GetAll();
+            var url = "https://localhost:7115/api/Videogames";
+            var videogames = await _repository.GetAll( url);
             return View(videogames);
         }
 
@@ -51,9 +52,9 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(VideogameDTO videogame)
         {
-           await  _repository.Create(videogame);
+            await _repository.Create(videogame);
             return View();
         }
-        
+
     }
 }

@@ -1,11 +1,14 @@
-using AutoMapper;
+
+using Entities;
+
+using Entities.Models;
+using Entities.Models.DTO;
 using Game_ECommerce.Areas.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1;
-using WebApplication1.Controllers;
-using WebApplication1.Data;
-using WebApplication1.Models.MappedModel;
+using Repositories.Repositories;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,10 +19,12 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 //builder.Services.AddDbContextFactory<ApplicationDbContext>();
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+//builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddHttpClient();
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(VideogameProfile));
 builder.Services.AddScoped<IDbContext<ApplicationDbContext>, ApplicationDbContext>();
-builder.Services.AddLogging();
+//builder.Services.AddLogging();
 builder.Services
     .AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddUserManager<CustomUserManager>()
@@ -28,7 +33,7 @@ builder.Services
     .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<BaseRepositories<Videogame,VideogameDTO>, VideogameRepository>();
+builder.Services.AddScoped<BaseRepositories<Videogame, VideogameDTO>, VideogameRepository>();
 builder.Services.AddScoped<VideogameRepository>();
 
 

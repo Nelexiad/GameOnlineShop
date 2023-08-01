@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Entities.Models.DTO;
+using Entities.Models;
+using Microsoft.AspNetCore.Mvc;
+using Repositories.Repositories;
 using System.Diagnostics;
-using WebApplication1.Models;
-using WebApplication1.Models.MappedModel;
+
 
 namespace WebApplication1.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly BaseRepositories<Videogame,VideogameDTO> _videogameRepository;
+        private readonly BaseRepositories<Videogame, VideogameDTO> _videogameRepository;
 
         public HomeController(ILogger<HomeController> logger, BaseRepositories<Videogame, VideogameDTO> videogameRepository)
         {
@@ -18,10 +20,10 @@ namespace WebApplication1.Controllers
 
         public IActionResult Index(int id)
         {
-            
+
             return View();
         }
 
-        
+
     }
 }
