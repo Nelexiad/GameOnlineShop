@@ -1,6 +1,4 @@
-
-using Entities;
-
+using Entities.Data;
 using Entities.Models;
 using Entities.Models.DTO;
 using Game_ECommerce.Areas.Identity;

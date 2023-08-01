@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Entities.Models;
 
-namespace Entities
+namespace Entities.Data
 {
     public interface IDbContext<T>
     {

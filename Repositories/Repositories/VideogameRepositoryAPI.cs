@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Entities;
 using Entities.Data;
 using Entities.Models;
 using Entities.Models.DTO;

@@ -19,7 +19,7 @@ namespace ApiVideogameStore.Controllers
         public async Task<IActionResult> Index()
         {
             var videogames = await _repository.GetAll();
-            return Ok(videogames) ;
+            return Ok(videogames);
         }
     }
 }

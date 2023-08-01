@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Entities.Models;
-using Entities.Data;
 
 
-namespace Entities
+namespace Entities.Data
 {
     public class ApplicationDbContext : IdentityDbContext, IDbContext<ApplicationDbContext>
     {

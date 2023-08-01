@@ -1,5 +1,4 @@
-﻿
-using Entities;
+﻿using Entities.Data;
 using Entities.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;

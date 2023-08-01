@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Entities;
 using Entities.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
