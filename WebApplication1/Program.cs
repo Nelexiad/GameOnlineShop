@@ -4,9 +4,13 @@ using Entities.Models.DTO;
 using Game_ECommerce.Areas.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Scaffolding;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
 using Repositories.Repositories;
-
-
+using Serilog;
+using Services;
+using WebApplication1.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,11 +22,22 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 //builder.Services.AddDbContextFactory<ApplicationDbContext>();
 //builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-builder.Services.AddHttpClient();
+
+    
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(VideogameProfile));
 builder.Services.AddScoped<IDbContext<ApplicationDbContext>, ApplicationDbContext>();
-//builder.Services.AddLogging();
+//builder.Services.AddLogging(builder =>
+//{
+//    builder.AddConsole();
+//    builder.AddDebug();
+
+//});
+
+builder.Host.UseSerilog((hostingContext, loggerConfig) =>
+{
+    loggerConfig.ReadFrom.Configuration(hostingContext.Configuration);
+});
 builder.Services
     .AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddUserManager<CustomUserManager>()
@@ -33,6 +48,12 @@ builder.Services
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<BaseRepositories<Videogame, VideogameDTO>, VideogameRepository>();
 builder.Services.AddScoped<VideogameRepository>();
+builder.Services.AddScoped<VideogameServices>();
+builder.Services.AddHttpClient(VideogameServices.ClientName,
+    client =>
+    {
+        client.BaseAddress = new Uri("https://localhost:7115/api/");
+    }).AddTransientHttpErrorPolicy(policyBuilde => policyBuilde.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), 5)));
 
 
 

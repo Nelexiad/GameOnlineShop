@@ -1,53 +1,54 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Entities.Models.DTO;
-using Entities.Data;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
-using Azure;
-using System.Text.Json.Serialization;
 using Newtonsoft.Json;
-
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Polly;
+using Polly.Retry;
 
 namespace Repositories.Repositories
 {
-    public abstract class BaseRepositories<TMODEL,TDTO> : IRepositoryMVC<TDTO> where TMODEL:class  where TDTO : class
+    public abstract class BaseRepositories<TMODEL, TDTO> : IRepositoryMVC<TDTO> where TMODEL : class where TDTO : class
     {
-        
         private readonly ILogger<TDTO> _logger;
         private readonly IMapper _mapper;
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClient;
+       
 
-        public BaseRepositories( ILogger<TDTO> logger,IMapper mapper, HttpClient httpClient)
+        public BaseRepositories(ILogger<TDTO> logger, IMapper mapper, IHttpClientFactory httpClient)
         {
-            
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
         }
+
+      
+
+      
+
         public virtual async Task<TDTO> Create(TDTO entity, string url)
         {
             try
             {
+                var httpClient = _httpClient.CreateClient("videogamesapi");
                 var toSaveEntity = _mapper.Map<TMODEL>(entity);
-                var response = await _httpClient.PostAsJsonAsync(url, toSaveEntity);
 
-                // Assicurati che la richiesta HTTP sia stata completata con successo (200 OK)
+                HttpResponseMessage response = await  httpClient.PostAsJsonAsync(url, toSaveEntity);
+
                 response.EnsureSuccessStatusCode();
 
-                // Leggi il contenuto della risposta HTTP e deserializzalo nel tipo appropriato (TDTO)
                 var dbEntity = await response.Content.ReadFromJsonAsync<TDTO>();
 
                 return dbEntity;
             }
             catch (HttpRequestException ex)
             {
-                // Gestisci l'eccezione e visualizza i dettagli dell'errore
                 _logger.LogError(ex, "Error occurred while sending the HTTP request.");
                 _logger.LogError("Request URL: " + url);
                 _logger.LogError("Request Body: " + JsonConvert.SerializeObject(entity));
                 _logger.LogError("Response Status Code: " + ex.StatusCode);
-                
                 throw;
             }
             catch (Exception ex)
@@ -57,12 +58,15 @@ namespace Repositories.Repositories
             }
         }
 
+        // Implementa gli altri metodi del repository utilizzando la stessa logica con Polly
+
         public virtual async Task<bool> Delete(int id)
         {
+            var httpClient = _httpClient.CreateClient("videogamesapi");
             try
             {
-                await _httpClient.DeleteAsync($"{id}");
-           
+                await httpClient.DeleteAsync($"{id}");
+
                 return true;
             }
             catch (Exception ex)
@@ -74,10 +78,12 @@ namespace Repositories.Repositories
 
         public virtual async Task<TDTO> Get(int id)
         {
+            var httpClient = _httpClient.CreateClient("videogamesapi");
             try
             {
-                var dbEntity = await _httpClient.GetFromJsonAsync<TMODEL>($"{id}");
-                var DTOentity= _mapper.Map<TDTO>(dbEntity);
+                var dbEntity = await httpClient.GetFromJsonAsync<TMODEL>($"{id}");
+                var DTOentity = _mapper.Map<TDTO>(dbEntity);
+                
                 return DTOentity;
             }
             catch (Exception ex)
@@ -89,11 +95,12 @@ namespace Repositories.Repositories
 
         public virtual async Task<IEnumerable<TDTO>> GetAll(string url)
         {
+            var httpClient = _httpClient.CreateClient("videogamesapi");
             try
             {
-                
-                var entities = await _httpClient.GetFromJsonAsync<IEnumerable<TMODEL>>(url);
-                var dtos = _mapper.Map<IEnumerable<TDTO>>(entities); // Mappa i modelli di dominio ai DTO
+                var entities = await httpClient.GetFromJsonAsync<IEnumerable<TMODEL>>(url);
+                var dtos = _mapper.Map<IEnumerable<TDTO>>(entities);
+                 
                 return dtos;
             }
             catch (Exception ex)
@@ -105,18 +112,18 @@ namespace Repositories.Repositories
 
         public virtual async Task<TDTO> Update(int id, TDTO entity)
         {
+            var httpClient = _httpClient.CreateClient("videogamesapi");
             try
             {
-                var existingEntity = await _httpClient.PutAsJsonAsync($"{id}",entity).Result.Content.ReadFromJsonAsync<TMODEL>();
-                var modifiedDTO= _mapper.Map<TDTO>(existingEntity);
+                var existingEntity = await httpClient.PutAsJsonAsync($"{id}", entity).Result.Content.ReadFromJsonAsync<TMODEL>();
+                var modifiedDTO = _mapper.Map<TDTO>(existingEntity);
                 return modifiedDTO;
-              
+
                 if (existingEntity == null)
                 {
                     throw new Exception($"Element with ID {id} not found.");
                 }
 
-               
             }
             catch (Exception ex)
             {
@@ -124,7 +131,5 @@ namespace Repositories.Repositories
                 throw;
             }
         }
-
     }
 }
-

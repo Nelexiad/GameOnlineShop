@@ -7,17 +7,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Repositories;
-
+using Services;
 
 namespace WebApplication1.Controllers
 {
     public class VideogamesController : Controller
     {
-        private VideogameRepository _repository;
+        private VideogameServices _services;
 
-        public VideogamesController(VideogameRepository repo)
+        public VideogamesController(VideogameServices repo)
         {
-            _repository = repo;
+            _services = repo;
 
 
 
@@ -31,7 +31,7 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> Index()
         {
             var url = "https://localhost:7115/api/Videogames";
-            var videogames = await _repository.GetAll( url);
+            var videogames = await _services.GetAll( url);
             return View(videogames);
         }
 
@@ -52,8 +52,8 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(VideogameDTO videogame)
         {
-            string url = "https://localhost:7115/api/Videogames";
-            await _repository.Create(videogame,url);
+            string url = "https://localhost:7114/api/Videogames";
+            await _services.Create(videogame,url);
             return View();
         }
 

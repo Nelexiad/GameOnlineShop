@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Repositories.Repositories
 {
-    public interface IRepositoryMVC<TDTO>
+    public interface IRepositoryMVC<TDTO> 
     {
         Task<TDTO> Get(int id);
 

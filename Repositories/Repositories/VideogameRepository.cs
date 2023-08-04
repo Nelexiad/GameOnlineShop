@@ -12,7 +12,7 @@ namespace Repositories.Repositories
 {
     public class VideogameRepository : BaseRepositories<Videogame,VideogameDTO>
     {
-        public VideogameRepository( ILogger<VideogameDTO> logger, IMapper mapper,HttpClient httpClient) : base( logger,mapper,httpClient)
+        public VideogameRepository( ILogger<VideogameDTO> logger, IMapper mapper,IHttpClientFactory httpClient) : base( logger,mapper,httpClient)
         {
         }
     }
