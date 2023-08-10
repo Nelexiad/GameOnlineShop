@@ -14,7 +14,7 @@ using WebApplication1.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+var configuration = builder.Configuration;
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -44,6 +44,12 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = "429964707964-d8cggmguv9rjv65brbbt9k7h7ic1pi4u.apps.googleusercontent.com";
+    googleOptions.ClientSecret = "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";
+});
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<BaseRepositories<Videogame, VideogameDTO>, VideogameRepository>();
